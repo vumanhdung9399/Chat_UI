@@ -65,9 +65,9 @@ const changeActiveSection = (event: {
       <div class="flex justify-center">
         <Typography variant="body-2"
           >Already have an account ?
-          <RouterLink to="/access/sign-in/" class="text-indigo-400 opacity-100">
+          <span class="text-indigo-400 opacity-100">
             Sign in
-          </RouterLink>
+          </span>
         </Typography>
       </div>
     </div>
