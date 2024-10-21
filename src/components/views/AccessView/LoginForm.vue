@@ -1,14 +1,46 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
 
 import Typography from "@src/components/ui/data-display/Typography.vue";
 import Button from "@src/components/ui/inputs/Button.vue";
 import IconButton from "@src/components/ui/inputs/IconButton.vue";
 import TextInput from "@src/components/ui/inputs/TextInput.vue";
 import { EyeSlashIcon, EyeIcon } from "@heroicons/vue/24/outline";
-import { RouterLink } from "vue-router";
+
+import authService from "@src/services/authService";
+import { useAuthStore } from "@src/store/authStore";
+import { toast } from "vue3-toastify";
+
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthStore();
 
 const showPassword = ref(false);
+const password = ref("");
+const username = ref("");
+
+const onLoginClicked = async () => {
+  try {
+    let params = {
+      username: username.value,
+      password: password.value,
+    };
+    const res = await authService.login(params);
+    if (res.status === 200) {
+      toast.success("success");
+      localStorage.setItem("accessToken", res.data.data.accessToken);
+      localStorage.setItem("refreshToken", res.data.data.refreshToken);
+      router.push({
+        name: "HomePage",
+      });
+    } else {
+      toast.error(res.data.message);
+    }
+  } catch (err) {
+    toast.error("Lỗi hệ thống, vui lòng thử lại");
+  }
+};
 </script>
 
 <template>
@@ -31,12 +63,28 @@ const showPassword = ref(false);
 
       <!--form-->
       <div class="mb-6">
-        <TextInput label="Email" placeholder="Enter your email" class="mb-5" />
+        <TextInput
+          label="Username"
+          placeholder="Enter your username"
+          class="mb-5"
+          @value-changed="
+            (value) => {
+              username = value;
+            }
+          "
+          :value="username"
+        />
         <TextInput
           label="Password"
           placeholder="Enter your password"
           :type="showPassword ? 'text' : 'password'"
           class="pr-[40px]"
+          @value-changed="
+            (value) => {
+              password = value;
+            }
+          "
+          :value="password"
         >
           <template v-slot:endAdornment>
             <IconButton
@@ -60,7 +108,7 @@ const showPassword = ref(false);
 
       <!--local controls-->
       <div class="mb-6">
-        <Button class="w-full mb-4" link to="/">Sign in</Button>
+        <Button class="w-full mb-4" @click="onLoginClicked">Sign in</Button>
       </div>
 
       <!--divider-->
@@ -93,12 +141,7 @@ const showPassword = ref(false);
         <div class="flex justify-center">
           <Typography variant="body-2"
             >Don’t have an account ?
-            <RouterLink
-              to="/access/sign-up/"
-              class="text-indigo-400 opacity-100"
-            >
-              Sign up
-            </RouterLink>
+            <span class="text-indigo-400 opacity-100"> Sign up </span>
           </Typography>
         </div>
       </div>

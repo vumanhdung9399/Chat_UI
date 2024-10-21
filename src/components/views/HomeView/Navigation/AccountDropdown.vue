@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import useStore from "@src/store/store";
+import { useRouter, useRoute } from "vue-router";
 
 import {
   ArrowLeftOnRectangleIcon,
@@ -9,6 +10,10 @@ import {
 import Dropdown from "@src/components/ui/navigation/Dropdown/Dropdown.vue";
 import DropdownLink from "@src/components/ui/navigation/Dropdown/DropdownLink.vue";
 import { RouterLink } from "vue-router";
+import authService from "@src/services/authService";
+import { toast } from "vue3-toastify";
+
+const router = useRouter()
 
 const props = defineProps<{
   showDropdown: boolean;
@@ -29,6 +34,21 @@ const handleCloseOnClickOutside = (event: Event) => {
     props.handleCloseDropdown();
   }
 };
+
+const onLogoutclicked = async () => {
+  try {
+    const res = await authService.logout();
+    if (res.status === 200) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      router.push({
+        name: 'Login'
+      })
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
 </script>
 
 <template>
@@ -97,13 +117,13 @@ const handleCloseOnClickOutside = (event: Event) => {
         :handle-click="props.handleCloseDropdown"
         color="danger"
       >
-        <RouterLink
-          to="/access/sign-in/"
+        <span
           class="w-full flex items-center justify-start"
+          @click="onLogoutclicked"
         >
           <ArrowLeftOnRectangleIcon class="h-5 w-5 mr-3" />
           Logout
-        </RouterLink>
+        </span>
       </DropdownLink>
     </Dropdown>
   </div>

@@ -11,6 +11,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "@src": resolve(rootDir, "src"),
+      "@": resolve(rootDir, "src"),
       "@custom_types": resolve(rootDir, "src/@custom_types"),
     },
   },

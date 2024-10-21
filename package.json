@@ -12,8 +12,10 @@
     "@heroicons/vue": "^2.0.12",
     "@videojs-player/vue": "^1.0.0",
     "@vueuse/integrations": "^9.3.0",
+    "axios": "^1.7.7",
     "click-outside-vue3": "^4.0.1",
     "focus-trap": "^7.0.0",
+    "jwt-decode": "^4.0.0",
     "linkify-string": "^4.0.2",
     "linkifyjs": "^4.0.2",
     "pinia": "^2.0.22",
@@ -22,6 +24,7 @@
     "video.js": "^7.20.3",
     "vue": "^3.2.40",
     "vue-router": "4",
+    "vue3-toastify": "^0.2.3",
     "wavesurfer.js": "^6.6.1"
   },
   "devDependencies": {
