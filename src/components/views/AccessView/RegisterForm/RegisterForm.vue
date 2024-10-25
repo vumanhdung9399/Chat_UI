@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { RouterLink } from "vue-router";
+import { RouterLink, useRouter } from "vue-router";
 
 import SlideTransition from "@src/components/ui/transitions/SlideTransition.vue";
 import Typography from "@src/components/ui/data-display/Typography.vue";
@@ -9,11 +9,15 @@ import PersonalSection from "@src/components/views/AccessView/RegisterForm/Perso
 
 defineEmits(["activeSectionChange"]);
 
+const router = useRouter();
+
 // determines what form section to use.
 const activeSectionName = ref("personal-section");
 
 // determines what direction the slide animation should use.
 const animation = ref("slide-left");
+
+const register = ref({});
 
 // get the active section component from the section name
 const ActiveSection = computed(() => {
@@ -28,10 +32,18 @@ const ActiveSection = computed(() => {
 const changeActiveSection = (event: {
   sectionName: string;
   animationName: string;
+  params: any;
 }) => {
   animation.value = event.animationName;
   activeSectionName.value = event.sectionName;
+  register.value = event.params;
 };
+
+const onLoginClicked = () => {
+  router.push({
+    name: 'Login'
+  })
+}
 </script>
 
 <template>
@@ -55,19 +67,20 @@ const changeActiveSection = (event: {
 
       <!--form section-->
       <SlideTransition :animation="animation">
-        <component
-          @active-section-change="changeActiveSection"
-          :is="ActiveSection"
-        />
+        <keep-alive>
+          <component
+            @active-section-change="changeActiveSection"
+            :params="register"
+            :is="ActiveSection"
+          />
+        </keep-alive>
       </SlideTransition>
 
       <!--bottom text-->
       <div class="flex justify-center">
         <Typography variant="body-2"
           >Already have an account ?
-          <span class="text-indigo-400 opacity-100">
-            Sign in
-          </span>
+          <span class="text-indigo-400 opacity-100 cursor-pointer" @click="onLoginClicked"> Sign in </span>
         </Typography>
       </div>
     </div>

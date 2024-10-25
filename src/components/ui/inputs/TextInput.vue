@@ -31,7 +31,7 @@ const variantClasses = computed(() => {
   }
 });
 
-const classes = twMerge(baseClasses, variantClasses.value, props.class);
+const classes = computed(() => {return twMerge(baseClasses, variantClasses.value, props.class)});
 </script>
 
 <template>

@@ -1,10 +1,42 @@
 <script setup lang="ts">
+import { ref } from "vue";
+import { toast } from "vue3-toastify";
+import { useRouter } from "vue-router";
+import authService from "@src/services/authService";
+
 import { EyeSlashIcon } from "@heroicons/vue/24/outline";
 
-import IconButton from "@src/components/ui/inputs/IconButton.vue";
-import Button from "@src/components/ui/inputs/Button.vue";
-import TextInput from "@src/components/ui/inputs/TextInput.vue";
-import Typography from "@src/components/ui/data-display/Typography.vue";
+import IconButton from "@/components/ui/inputs/IconButton.vue";
+import Button from "@/components/ui/inputs/Button.vue";
+import TextInput from "@/components/ui/inputs/TextInput.vue";
+import Typography from "@/components/ui/data-display/Typography.vue";
+
+const router = useRouter();
+
+const old_password = ref("");
+const new_password = ref("");
+const re_password = ref("");
+
+const onResetClicked = async () => {
+  try {
+    let params = {
+      old_password: old_password.value,
+      new_password: new_password.value,
+      re_password: re_password.value
+    };
+    const res = await authService.changePassword(params);
+    if (res.status === 200) {
+      toast.success("success");
+      router.push({
+        name: "HomePage",
+      });
+    } else {
+      toast.error(res.data.message);
+    }
+  } catch (err) {
+    toast.error("Lỗi hệ thống, vui lòng thử lại");
+  }
+};
 </script>
 
 <template>
@@ -33,6 +65,12 @@ import Typography from "@src/components/ui/data-display/Typography.vue";
           label="Old Password"
           placeholder="Enter your password"
           class="mb-5"
+          @value-changed="
+            (value) => {
+              old_password = value;
+            }
+          "
+          :value="old_password"
         >
           <template v-slot:endAdornment>
             <IconButton
@@ -53,6 +91,12 @@ import Typography from "@src/components/ui/data-display/Typography.vue";
           label="New Password"
           placeholder="Enter your password"
           class="mb-5"
+          @value-changed="
+            (value) => {
+              new_password = value;
+            }
+          "
+          :value="new_password"
         >
           <template v-slot:endAdornment>
             <IconButton
@@ -72,6 +116,12 @@ import Typography from "@src/components/ui/data-display/Typography.vue";
           variant="bordered"
           label="Confirm New Password"
           placeholder="Enter your password"
+          @value-changed="
+            (value) => {
+              re_password = value;
+            }
+          "
+          :value="re_password"
         >
           <template v-slot:endAdornment>
             <IconButton
@@ -90,7 +140,7 @@ import Typography from "@src/components/ui/data-display/Typography.vue";
 
       <!--controls-->
       <div>
-        <Button class="w-full" link to="/">Reset Password</Button>
+        <Button class="w-full" @click="onResetClicked">Reset Password</Button>
       </div>
     </div>
   </div>

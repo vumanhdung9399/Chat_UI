@@ -7,8 +7,8 @@ import {
   ArrowPathIcon,
   InformationCircleIcon,
 } from "@heroicons/vue/24/outline";
-import Dropdown from "@src/components/ui/navigation/Dropdown/Dropdown.vue";
-import DropdownLink from "@src/components/ui/navigation/Dropdown/DropdownLink.vue";
+import Dropdown from "@/components/ui/navigation/Dropdown/Dropdown.vue";
+import DropdownLink from "@/components/ui/navigation/Dropdown/DropdownLink.vue";
 import { RouterLink } from "vue-router";
 import authService from "@src/services/authService";
 import { toast } from "vue3-toastify";

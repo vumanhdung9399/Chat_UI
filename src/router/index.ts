@@ -36,10 +36,10 @@ const router = createRouter({
 router.beforeEach(async (to, from) => {
   const authStore = useAuthStore();
   if (!["Login", "Register"].includes(String(to.name))) {
-    if (!localStorage.getItem("token")) {
+    if (!localStorage.getItem("accessToken")) {
       return { name: "Login" };
     }
-
+    
     if (isTokenExpired()) {
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) {

@@ -1,23 +1,54 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import Button from "@src/components/ui/inputs/Button.vue";
 import TextInput from "@src/components/ui/inputs/TextInput.vue";
 import Typography from "@src/components/ui/data-display/Typography.vue";
+
+const register = ref({
+  email: "",
+  username: "",
+  fullName: "",
+  password: "",
+  re_password: ""
+});
 </script>
 
 <template>
   <div>
     <!--form-->
     <div class="mb-5">
-      <TextInput label="Email" placeholder="Enter your email" class="mb-5" />
       <TextInput
-        label="First Name"
-        placeholder="Enter your first name"
+        label="Email"
+        placeholder="Enter your email"
         class="mb-5"
+        @value-changed="
+          (value) => {
+            register.email = value;
+          }
+        "
+        :value="register.email"
       />
       <TextInput
-        label="Last Name"
-        placeholder="Enter your last name"
+        label="Username"
+        placeholder="Enter your username"
         class="mb-5"
+        @value-changed="
+          (value) => {
+            register.username = value;
+          }
+        "
+        :value="register.username"
+      />
+      <TextInput
+        label="Full Name"
+        placeholder="Enter your full name"
+        class="mb-5"
+        @value-changed="
+          (value) => {
+            register.fullName = value;
+          }
+        "
+        :value="register.fullName"
       />
     </div>
 
@@ -29,6 +60,7 @@ import Typography from "@src/components/ui/data-display/Typography.vue";
           $emit('active-section-change', {
             sectionName: 'password-section',
             animationName: 'slide-left',
+            params: register
           })
         "
         >Next</Button
