@@ -1,26 +1,54 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 
-import Typography from "@src/components/ui/data-display/Typography.vue";
-import Button from "@src/components/ui/inputs/Button.vue";
-import IconButton from "@src/components/ui/inputs/IconButton.vue";
-import TextInput from "@src/components/ui/inputs/TextInput.vue";
+import Typography from "@/components/ui/data-display/Typography.vue";
+import Button from "@/components/ui/inputs/Button.vue";
+import IconButton from "@/components/ui/inputs/IconButton.vue";
+import TextInput from "@/components/ui/inputs/TextInput.vue";
 import { EyeSlashIcon, EyeIcon } from "@heroicons/vue/24/outline";
 
 import authService from "@src/services/authService";
 import { useAuthStore } from "@src/store/authStore";
 import { toast } from "vue3-toastify";
+import { useForm } from "vee-validate";
+import * as yup from "yup";
+
+const getSchema = () => {
+  return yup.object({
+    username: yup
+      .string()
+      .trim()
+      .required("Vui long nhap username"),
+    password: yup
+      .string()
+      .trim()
+      .required("Vui long nhap password"),
+  });
+};
+
+const schema = ref(getSchema());
+
+const { defineField, handleSubmit, errors } = useForm({
+  validationSchema: schema,
+});
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
 const showPassword = ref(false);
-const password = ref("");
-const username = ref("");
+const [password] = defineField("password");
+const [username] = defineField("username");
 
-const onLoginClicked = async () => {
+const styleError = computed(() => {
+  return {
+    username: `mb-1${errors.value.username ? ' border !border-red-500' : ''}`,
+    password: `pr-[40px]${errors.value.password ? ' border !border-red-500' : ''}`
+  }
+})
+
+const onLoginClicked = handleSubmit(async (values) => {
   try {
     let params = {
       username: username.value,
@@ -31,6 +59,7 @@ const onLoginClicked = async () => {
       toast.success("success");
       localStorage.setItem("accessToken", res.data.data.accessToken);
       localStorage.setItem("refreshToken", res.data.data.refreshToken);
+      authStore.getUser();
       router.push({
         name: "HomePage",
       });
@@ -40,6 +69,12 @@ const onLoginClicked = async () => {
   } catch (err) {
     toast.error("Lỗi hệ thống, vui lòng thử lại");
   }
+});
+
+const onRegisterClicked = () => {
+  router.push({
+    name: "Register",
+  });
 };
 </script>
 
@@ -66,7 +101,7 @@ const onLoginClicked = async () => {
         <TextInput
           label="Username"
           placeholder="Enter your username"
-          class="mb-5"
+          :class="styleError.username"
           @value-changed="
             (value) => {
               username = value;
@@ -74,11 +109,12 @@ const onLoginClicked = async () => {
           "
           :value="username"
         />
+        <small class="block h-6 text-red-500">{{ errors.username }}</small>
         <TextInput
           label="Password"
           placeholder="Enter your password"
           :type="showPassword ? 'text' : 'password'"
-          class="pr-[40px]"
+          :class="styleError.password"
           @value-changed="
             (value) => {
               password = value;
@@ -104,6 +140,7 @@ const onLoginClicked = async () => {
             </IconButton>
           </template>
         </TextInput>
+        <small class="block h-6 text-red-500">{{ errors.password }}</small>
       </div>
 
       <!--local controls-->
@@ -141,7 +178,12 @@ const onLoginClicked = async () => {
         <div class="flex justify-center">
           <Typography variant="body-2"
             >Don’t have an account ?
-            <span class="text-indigo-400 opacity-100"> Sign up </span>
+            <span
+              class="text-indigo-400 opacity-100 cursor-pointer"
+              @click="onRegisterClicked"
+            >
+              Sign up
+            </span>
           </Typography>
         </div>
       </div>

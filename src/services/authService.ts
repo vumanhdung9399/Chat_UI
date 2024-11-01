@@ -13,6 +13,9 @@ class AuthService {
   async logout() {
     return await api.post("/logout");
   }
+  async changePassword(params: any) {
+    return await api.post("/change-password", params);
+  }
   async getUser() {
     return await api.get("/user");
   }

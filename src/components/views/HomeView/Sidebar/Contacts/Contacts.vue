@@ -1,20 +1,22 @@
 <script setup lang="ts">
 import { UserPlusIcon } from "@heroicons/vue/24/outline";
-import type { IContactGroup, IUser } from "@src/types";
-import type { Ref } from "vue";
+import type { IContact, IContactGroup, IUser } from "@src/types";
+import { onBeforeUnmount, onMounted, onUnmounted, Ref } from "vue";
 import { ref, watch } from "vue";
 
 import useStore from "@src/store/store";
 
-import AddContactModal from "@src/components/shared/modals/AddContactModal.vue";
-import NoContacts from "@src/components/states/empty-states/NoContacts.vue";
-import Loading2 from "@src/components/states/loading-states/Loading2.vue";
-import IconButton from "@src/components/ui/inputs/IconButton.vue";
-import SearchInput from "@src/components/ui/inputs/SearchInput.vue";
-import SortedContacts from "@src/components/views/HomeView/Sidebar/Contacts/SortedContacts.vue";
-import SidebarHeader from "@src/components/views/HomeView/Sidebar/SidebarHeader.vue";
+import AddContactModal from "@/components/shared/modals/AddContactModal.vue";
+import NoContacts from "@/components/states/empty-states/NoContacts.vue";
+import Loading2 from "@/components/states/loading-states/Loading2.vue";
+import IconButton from "@/components/ui/inputs/IconButton.vue";
+import SearchInput from "@/components/ui/inputs/SearchInput.vue";
+import SortedContacts from "@/components/views/HomeView/Sidebar/Contacts/SortedContacts.vue";
+import SidebarHeader from "@/components/views/HomeView/Sidebar/SidebarHeader.vue";
+import { useContactStore } from "@src/store/contactStore";
 
 const store = useStore();
+const contactStore = useContactStore();
 
 const searchText: Ref<string> = ref("");
 
@@ -25,24 +27,23 @@ const contactContainer: Ref<HTMLElement | null> = ref(null);
 
 // contact groups filtered by search text
 const filteredContactGroups: Ref<IContactGroup[] | undefined> = ref(
-  store.contactGroups
+  contactStore.contactGroups
 );
+
+onMounted(() => {
+  // contactStore.getContact();
+  filteredContactGroups.value = contactStore.contactGroups
+});
 
 // update the filtered contact groups based on the search text
 watch(searchText, () => {
-  filteredContactGroups.value = store.contactGroups
+  filteredContactGroups.value = contactStore.contactGroups
     ?.map((group) => {
       let newGroup = { ...group };
 
-      newGroup.contacts = newGroup.contacts.filter((contact) => {
+      newGroup.contacts = newGroup.contacts.filter((contact: IContact) => {
         if (
-          contact.firstName
-            .toLowerCase()
-            .includes(searchText.value.toLowerCase())
-        )
-          return true;
-        else if (
-          contact.lastName
+          contact.fullName
             .toLowerCase()
             .includes(searchText.value.toLowerCase())
         )
@@ -87,20 +88,18 @@ watch(searchText, () => {
       class="w-full h-full scroll-smooth scrollbar-hidden"
       style="overflow-x: visible; overflow-y: scroll"
     >
-      <Loading2
-        v-if="store.status === 'loading' || store.delayLoading"
-        v-for="item in 5"
-      />
+      <div v-if="store.status === 'loading' || store.delayLoading">
+        <Loading2 v-for="(item, index) in 5" :key="index" />
+      </div>
 
       <SortedContacts
         v-else-if="
           store.status === 'success' &&
           !store.delayLoading &&
-          store.user &&
-          store.user.contacts.length > 0
+          contactStore.contactGroups?.length > 0
         "
         :contactGroups="filteredContactGroups"
-        :bottom-edge="(contactContainer as HTMLElement)?.getBoundingClientRect().bottom"
+        :bottom-edge="contactContainer?.getBoundingClientRect().bottom"
       />
 
       <NoContacts v-else />
