@@ -5,12 +5,13 @@ export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: {
       id: null,
+      username: ''
     },
   }),
   actions: {
     async getUser() {
       let res = await authService.getUser();
-      this.user = res.data;
+      this.user = res.data.data;
     },
     async refreshToken(refreshToken: String) {
         let params = {

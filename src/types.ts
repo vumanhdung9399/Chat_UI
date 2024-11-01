@@ -11,11 +11,13 @@ export interface IUser {
 
 export interface IContact {
   id: number;
-  firstName: string;
-  lastName: string;
-  avatar: string;
+  users_id: number,
+  fullName: string,
+  phone?: string,
+  avatar?: string;
   email: string;
-  lastSeen: Date;
+  lastSeen?: Date;
+  isOnline?: boolean;
 }
 
 export interface IPreviewData {

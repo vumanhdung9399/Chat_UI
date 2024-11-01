@@ -4,6 +4,7 @@ import HomeView from "@src/components/views/HomeView/HomeView.vue";
 import PasswordResetView from "@src/components/views/PasswordResetView/PasswordResetView.vue";
 import { useAuthStore } from "@src/store/authStore";
 import { isTokenExpired } from "@src/utils/helper";
+import { useContactStore } from "@src/store/contactStore";
 
 const routes = [
   {
@@ -35,6 +36,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const authStore = useAuthStore();
+  const contactStore = useContactStore();
   if (!["Login", "Register"].includes(String(to.name))) {
     if (!localStorage.getItem("accessToken")) {
       return { name: "Login" };
@@ -56,6 +58,7 @@ router.beforeEach(async (to, from) => {
     if (!authStore.user.id) {
       try {
         await authStore.getUser();
+        await contactStore.getContact();
       } catch (err) {
         return { name: "Login" };
       }

@@ -59,6 +59,7 @@ const onLoginClicked = handleSubmit(async (values) => {
       toast.success("success");
       localStorage.setItem("accessToken", res.data.data.accessToken);
       localStorage.setItem("refreshToken", res.data.data.refreshToken);
+      authStore.getUser();
       router.push({
         name: "HomePage",
       });

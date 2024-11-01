@@ -11,3 +11,12 @@ export const isTokenExpired = () => {
     return true;
   }
 };
+
+export const formatValidateBE = (dataError: any) => {
+  let err = {};
+  dataError.map((e: any) => {
+    let item = { [e.path]: e.msg }
+    err = {...err, ...item}
+  })
+  return err;
+}

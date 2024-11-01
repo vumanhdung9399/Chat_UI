@@ -3,17 +3,15 @@ import type { IContactGroup } from "@src/types";
 import type { Ref } from "vue";
 import { ref } from "vue";
 
-import { getFullName } from "@src/utils";
-
 import {
   EllipsisVerticalIcon,
   InformationCircleIcon,
   TrashIcon,
 } from "@heroicons/vue/24/outline";
-import Typography from "@src/components/ui/data-display/Typography.vue";
-import IconButton from "@src/components/ui/inputs/IconButton.vue";
-import Dropdown from "@src/components/ui/navigation/Dropdown/Dropdown.vue";
-import DropdownLink from "@src/components/ui/navigation/Dropdown/DropdownLink.vue";
+import Typography from "@/components/ui/data-display/Typography.vue";
+import IconButton from "@/components/ui/inputs/IconButton.vue";
+import Dropdown from "@/components/ui/navigation/Dropdown/Dropdown.vue";
+import DropdownLink from "@/components/ui/navigation/Dropdown/DropdownLink.vue";
 
 const props = defineProps<{
   contactGroups?: IContactGroup[];
@@ -98,13 +96,23 @@ const handleClickOutside = (event: Event) => {
       <div class="w-full p-5 flex justify-between items-center">
         <button
           class="default-outline transition-all duration-200 ease-out"
-          :aria-label="getFullName(contact)"
+          :aria-label="contact.fullName"
         >
-          <div class="flex-row">
-            <!--contact name-->
-            <Typography variant="heading-2">
-              {{ getFullName(contact) }}
-            </Typography>
+          <div class="flex items-center">
+            <div
+              :style="{
+                backgroundImage: `url(https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80)`,
+              }"
+              class="w-[36px] h-[36px] bg-cover bg-center rounded-full relative"
+            >
+              <div v-if="contact.isOnline" class="w-[10px] h-[10px] bg-lime-500 rounded-full absolute bottom-[1px] right-[1px]"></div>
+            </div>
+            <div class="flex-row ml-4">
+              <!--contact name-->
+              <Typography variant="heading-2">
+                {{ contact.fullName }}
+              </Typography>
+            </div>
           </div>
         </button>
 
@@ -113,7 +121,7 @@ const handleClickOutside = (event: Event) => {
           <!--dropdown menu button-->
           <IconButton
             :id="'open-contact-menu-' + index"
-            :aria-expanded="(dropdownMenuStates as boolean[][])[groupIndex][index]"
+            :aria-expanded="dropdownMenuStates[groupIndex][index]"
             :aria-controls="'contact-menu-' + index"
             @click="(event) => handleToggleDropdown(event, groupIndex, index)"
             class="open-menu w-6 h-6"
@@ -131,7 +139,7 @@ const handleClickOutside = (event: Event) => {
             :close-dropdown="handleCloseAllMenus"
             :handle-click-outside="handleClickOutside"
             :aria-labelledby="'open-contact-menu-' + index"
-            :show="(dropdownMenuStates as boolean[][])[groupIndex][index]"
+            :show="dropdownMenuStates[groupIndex][index]"
             :position="dropdownMenuPosition"
           >
             <DropdownLink>
