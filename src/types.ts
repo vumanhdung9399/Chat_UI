@@ -11,6 +11,7 @@ export interface IUser {
 
 export interface IContact {
   id: number;
+  contact_id: number,
   users_id: number,
   fullName: string,
   phone?: string,

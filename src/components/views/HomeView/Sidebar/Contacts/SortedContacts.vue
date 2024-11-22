@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IContactGroup } from "@src/types";
+import type { IContact, IContactGroup } from "@src/types";
 import type { Ref } from "vue";
 import { ref } from "vue";
 
@@ -12,11 +12,16 @@ import Typography from "@/components/ui/data-display/Typography.vue";
 import IconButton from "@/components/ui/inputs/IconButton.vue";
 import Dropdown from "@/components/ui/navigation/Dropdown/Dropdown.vue";
 import DropdownLink from "@/components/ui/navigation/Dropdown/DropdownLink.vue";
+import contactService from "@src/services/contactService";
+import { toast } from "vue3-toastify";
+import { useContactStore } from "@src/store/contactStore";
 
 const props = defineProps<{
   contactGroups?: IContactGroup[];
   bottomEdge?: number;
 }>();
+
+const contactStore = useContactStore();
 
 // the position of the dropdown menu.
 const dropdownMenuPosition = ref(["top-6", "right-0"]);
@@ -82,6 +87,23 @@ const handleClickOutside = (event: Event) => {
     handleCloseAllMenus();
   }
 };
+
+const onDeleteContactClicked = async (contact: IContact) => {
+  const params = {
+    users_id: contact.id
+  }
+  try {
+    const res = await contactService.delete(params);
+    if (res.status === 200) {
+      contactStore.getContact();
+      toast.success('Xoa lien he thanh cong')
+    } else {
+      toast.error(res.data.message)
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
 </script>
 
 <template>
@@ -149,7 +171,7 @@ const handleClickOutside = (event: Event) => {
               Personal information
             </DropdownLink>
 
-            <DropdownLink color="danger">
+            <DropdownLink color="danger" @click="onDeleteContactClicked(contact)">
               <TrashIcon class="h-5 w-5 mr-3" />
               Delete contact
             </DropdownLink>
