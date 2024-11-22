@@ -5,12 +5,30 @@ import { IContact, IContactGroup } from "@src/types";
 export const useContactStore = defineStore("contact", {
   state: () => ({
     contactGroups: [] as IContactGroup[] | undefined,
+    contactSend: [] as IContact[] | undefined,
+    contactWaitConf: [] as IContact[] | undefined
   }),
   actions: {
     async getContact() {
       try {
         const contacts = await contactService.list();
         this.contactGroups = await this.mapContactGroup(contacts.data.data);
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async getContactSend() {
+      try {
+        const contacts = await contactService.listSend();
+        this.contactSend = contacts.data.data;
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async getContactWaitConf() {
+      try {
+        const contacts = await contactService.listWaitConf();
+        this.contactWaitConf = contacts.data.data;
       } catch (err) {
         console.log(err);
       }
@@ -50,7 +68,7 @@ export const useContactStore = defineStore("contact", {
     async showOnOff(contactId: number, isOnline: boolean) {
       this.contactGroups?.map((item: IContactGroup) => {
         item.contacts.map((e: IContact) => {
-          if (contactId == e.users_id) {
+          if (contactId == e.id) {
             e.isOnline = isOnline;
           }
           return e;

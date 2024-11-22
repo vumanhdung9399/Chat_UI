@@ -59,6 +59,8 @@ router.beforeEach(async (to, from) => {
       try {
         await authStore.getUser();
         await contactStore.getContact();
+        await contactStore.getContactSend();
+        await contactStore.getContactWaitConf();
       } catch (err) {
         return { name: "Login" };
       }
